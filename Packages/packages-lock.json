@@ -14,21 +14,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.feature.2d": {
-      "version": "2.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.2d.animation": "9.1.0",
-        "com.unity.2d.pixel-perfect": "5.0.3",
-        "com.unity.2d.psdimporter": "8.0.4",
-        "com.unity.2d.sprite": "1.0.0",
-        "com.unity.2d.spriteshape": "9.0.2",
-        "com.unity.2d.tilemap": "1.0.0",
-        "com.unity.2d.tilemap.extras": "3.1.2",
-        "com.unity.2d.aseprite": "1.1.0"
-      }
-    },
     "com.unity.ide.rider": {
       "version": "3.0.27",
       "depth": 0,
@@ -46,18 +31,6 @@
         "com.unity.test-framework": "1.1.9"
       },
       "url": "https://packages.unity.com"
-    },
-    "com.unity.render-pipelines.universal": {
-      "version": "14.0.10",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.mathematics": "1.2.1",
-        "com.unity.burst": "1.8.9",
-        "com.unity.render-pipelines.core": "14.0.10",
-        "com.unity.shadergraph": "14.0.10",
-        "com.unity.render-pipelines.universal-config": "14.0.9"
-      }
     },
     "com.unity.test-framework": {
       "version": "1.1.33",
