@@ -1,4 +1,4 @@
-# Gulliver's Games Software Engineer Challenge
+# GG Software Engineer Challenge
 
 ## Requirements Specified In The Challenge
 - [x] The game is playable in both portrait and landscape mode
