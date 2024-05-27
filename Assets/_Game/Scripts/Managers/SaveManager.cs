@@ -91,9 +91,6 @@ namespace TileGame
         
         public void SaveScores()
         {
-            var levelScore = _scoreManager.CalculateLevelScore();
-            SetHighScore(_levelManager.GetCurrentLevelIndex(), levelScore);
-            
             var levelToUnlock = _levelManager.GetCurrentLevelIndex() + 1;
             UnlockLevel(levelToUnlock);
         }
