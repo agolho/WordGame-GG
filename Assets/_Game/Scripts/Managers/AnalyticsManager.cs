@@ -11,7 +11,6 @@ namespace TileGame
 
     public class AnalyticsManager : MonoBehaviour
     {
-
         public void LogEvent(int activeLevelIndex, LogEventTypes logEventType, int score = 0)
         {
             if (logEventType == LogEventTypes.LevelStarted)

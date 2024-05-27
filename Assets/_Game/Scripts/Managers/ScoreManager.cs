@@ -7,6 +7,8 @@ namespace TileGame
     {
         private UIManager _uiManager;
         private TileManager _tileManager;
+        private SaveManager _saveManager;
+        private LevelManager _levelManager;
         
         private readonly LetterScoreData _letterScoreData = new LetterScoreData();
         private int _score;
@@ -17,12 +19,18 @@ namespace TileGame
         public void Initialize(GameScriptsConfig config)
         {
             _score = 0;
-            _uiManager = config.UIManager;
-            _tileManager = config.TileManager;
-            
+            AssignScripts(config);
             UpdateScoreText();
         }
-        
+
+        private void AssignScripts(GameScriptsConfig config)
+        {
+            _uiManager = config.UIManager;
+            _tileManager = config.TileManager;
+            _saveManager = config.SaveManager;
+            _levelManager = config.LevelManager;
+        }
+
         public void ChangeScore()
         {
             _score += _wordScore;
@@ -54,16 +62,14 @@ namespace TileGame
         {
             return _letterScoreData.GetScoreForLetter(letter);
         }
-    
-        public int CalculateLevelScore()
+
+        private int CalculateLevelEndScore()
         {
             var penalty = CalculatePenalty();
-            
-            _score += _wordScore;
+      
             _score -= penalty;
             if (_score < 0) _score = 0;
     
-            _uiManager.ToggleScoreText(false);
             return _score;
         }
 
@@ -102,7 +108,18 @@ namespace TileGame
 
         public int GetLevelScore()
         {
-            return _score;
+            var finishingScore = CalculateLevelEndScore();
+            return finishingScore;
+        }
+
+        public void CheckHighScore()
+        {
+            var levelIndex = _levelManager.GetCurrentLevelIndex();
+            var highScore = _saveManager.GetHighScore(levelIndex);
+            if(_score > highScore)
+            {
+                _saveManager.SetHighScore(levelIndex, _score);
+            }
         }
     }
 }

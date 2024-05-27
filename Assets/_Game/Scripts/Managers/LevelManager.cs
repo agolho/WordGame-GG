@@ -39,14 +39,15 @@ namespace TileGame
         {
             _activeLevelIndex = levelIndex;
             _currentPuzzleData = _levelDatas.GetLevelData(levelIndex);
-            StartCoroutine(LoadLevelTiles());
+            StartCoroutine(LoadLevel());
             _uiManager.SwitchToGameplayScreen();
             _analyticsManager.LogEvent(_activeLevelIndex, LogEventTypes.LevelStarted);
         }
 
-        private IEnumerator LoadLevelTiles()
+        private IEnumerator LoadLevel()
         {
             yield return new WaitForSeconds(1); // Wait for the level selection panel to animate out
+            _scoreManager.ResetScore();
             _tileManager.LoadLevel(_currentPuzzleData);
         }
 
@@ -68,7 +69,6 @@ namespace TileGame
         {
             yield return new WaitForSeconds(1);  // Wait for the last tile to finish animating
             _uiManager.SwitchToLevelEndScreen();
-            _scoreManager.ResetScore();
         }
 
         #endregion

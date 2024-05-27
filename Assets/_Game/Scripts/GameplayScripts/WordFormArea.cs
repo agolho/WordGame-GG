@@ -11,13 +11,15 @@ namespace TileGame
         [Header("Managers & Components")] private TileManager _tileManager;
         private SentWordsDisplay _sentWordsDisplay;
         private ScoreManager _scoreManager;
+        private UIManager _uiManager;
         private TilePooler _tilePooler;
+        private WordService _wordService;
+        
         private readonly List<LetterTile> _letterTiles = new List<LetterTile>();
         private readonly Stack<MoveRecord> _moveHistory = new Stack<MoveRecord>();
-        private WordService _wordService;
 
-        [Header("UI Elements")] [SerializeField]
-        private Image validityCheckerImage;
+        [Header("UI Elements")] 
+        [SerializeField] private Image validityCheckerImage;
 
         [SerializeField] private Sprite validWordSprite;
         [SerializeField] private Sprite invalidWordSprite;
@@ -30,7 +32,8 @@ namespace TileGame
         [SerializeField] private GameObject sentWordPrefab;
         [SerializeField] private TextAsset dictionary;
 
-        [Header("Settings")] [SerializeField] private float moveSpeed = 5f;
+        [Header("Settings")] 
+        [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private Color lightColor = new Color(0, 1, 0, .7f);
         private bool _areaAvailable = true;
 
@@ -58,6 +61,7 @@ namespace TileGame
             _sentWordsDisplay = config.SentWordsDisplay;
             _scoreManager = config.ScoreManager;
             _tilePooler = config.TilePooler;
+            _uiManager = config.UIManager;
         }
 
         #region Letter Management
@@ -71,13 +75,19 @@ namespace TileGame
 
             validityCheckerImage.sprite = invalidWordSprite;
             sendButton.interactable = false;
-            _moveHistory.Clear();
-
+            ClearHistory();
+            
             PlaySendAnimations(word);
 
             _sentWordsDisplay.AddWord(word);
             _tileManager.CheckLevelEnd();
             _scoreManager.ChangeScore();
+        }
+
+        private void ClearHistory()
+        {
+            _moveHistory.Clear();
+            _uiManager.ToggleUndoButton(false);
         }
 
         public void TakeLetterTile(LetterTile letterTile, Transform originalParent, Transform originalTransform)
@@ -86,10 +96,16 @@ namespace TileGame
             _letterTiles.Add(letterTile);
             letterTile.SetInWordArea(true);
             var moveDuration = CalculateConstantSpeedDuration(letterTile, transform, moveSpeed);
-            _moveHistory.Push(new MoveRecord(letterTile, originalParent, originalTransform.position, moveDuration));
+            CreateHistoryPoint(letterTile, originalParent, originalTransform, moveDuration);
 
             MoveLetterTileToSlot(letterTile);
             CheckIfInDictionary();
+        }
+
+        private void CreateHistoryPoint(LetterTile letterTile, Transform originalParent, Transform originalTransform, float moveDuration)
+        {
+            _moveHistory.Push(new MoveRecord(letterTile, originalParent, originalTransform.position, moveDuration));
+            _uiManager.ToggleUndoButton(_moveHistory.Count > 0);
         }
 
         #endregion
@@ -220,7 +236,11 @@ namespace TileGame
 
         public void UndoLastMove()
         {
-            if (_moveHistory.Count == 0) return;
+            if (_moveHistory.Count == 0)
+            {
+                _uiManager.ToggleUndoButton(false);
+                return;
+            }
 
             var lastMove = _moveHistory.Pop();
             var lastMovedTile = lastMove.LetterTile;
@@ -239,6 +259,7 @@ namespace TileGame
 
             _letterTiles.Remove(lastMovedTile);
             CheckIfInDictionary();
+            _uiManager.ToggleUndoButton(_moveHistory.Count > 0);
         }
 
         private static void MoveTileBackToOriginalPosition(LetterTile lastMovedTile, Transform originalParent,

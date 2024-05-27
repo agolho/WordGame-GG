@@ -21,6 +21,7 @@ namespace TileGame
         [SerializeField] private TextMeshProUGUI scoreText;
         [SerializeField] private TextMeshProUGUI wordScoreText;
         [SerializeField] private TextMeshProUGUI levelTitleText;
+        [SerializeField] private Button undoButton;
 
         [Header("Level End Screen Elements")]
         [SerializeField] private GameObject levelEndPanel;
@@ -90,12 +91,9 @@ namespace TileGame
         
         public void SwitchToLevelEndScreen()
         {
-            var score = _scoreManager.GetLevelScore();
-            var highScore = _saveManager.GetHighScore(_levelManager.GetCurrentLevelIndex());
-            UpdateLevelEndScoreTexts(score, highScore);
-            
             StartCoroutine(AnimateGameplayScreenOut());
             StartCoroutine(AnimateAndActivateLevelEndScreenIn());
+            GetLastScore();
         }
         
         private void SwitchToLevelSelectionScreen()
@@ -224,26 +222,50 @@ namespace TileGame
             var title = _levelDatas.GetLevelData(_levelManager.GetCurrentLevelIndex()).title;
             levelTitleText.text = title;
         }
+
+        public void ToggleUndoButton(bool state)
+        {
+            undoButton.interactable = state;
+        }
         #endregion
 
         #region LevelEndScreen
-        
-        public void UpdateLevelEndScoreTexts(int levelScore, int highScore)
+
+        private void UpdateLevelEndScoreTexts(int levelScore, int highScore)
         {
             levelScoreText.text = levelScore.ToString();
             highScoreText.text = highScore.ToString();
 
             if (levelScore <= highScore) return;
+            highScoreText.text = levelScore.ToString();
             highScorePanel.SetActive(true);
+            
+            LogHighScoreEvent(levelScore);
+        }
+
+        private void LogHighScoreEvent(int levelScore)
+        {
             _analyticsManager.LogEvent(_levelManager.GetCurrentLevelIndex(), LogEventTypes.HighScore, levelScore);
         }
 
         private IEnumerator AnimateAndActivateLevelEndScreenIn()
         {
             yield return new WaitForSeconds(2); // Wait for the gameplay screen to animate out
+            
+
             levelEndPanel.SetActive(true);
             levelEndPanel.transform.DOLocalMoveX(0, .5f);
         }
+
+        private void GetLastScore()
+        {
+            ToggleScoreText(false);
+            var score = _scoreManager.GetLevelScore();
+            var highScore = _saveManager.GetHighScore(_levelManager.GetCurrentLevelIndex());
+            UpdateLevelEndScoreTexts(score, highScore);
+            _scoreManager.CheckHighScore();
+        }
+
         private void AnimateAndDeactivateLevelEndScreenOut()
         {
             levelEndPanel.transform.DOLocalMoveX(-150, .5f).OnComplete(() =>
