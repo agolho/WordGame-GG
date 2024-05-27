@@ -1,6 +1,7 @@
 # GG Software Engineer Challenge
 
 ## Requirements Specified In The Challenge
+- [ ] Auto-solver functionality to find the best possible high scores in levels
 - [x] The game is playable in both portrait and landscape mode
 - [x] High score system
 - [x] Undo functionality
